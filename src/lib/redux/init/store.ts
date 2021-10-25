@@ -1,7 +1,11 @@
 // Core
-import { createStore, applyMiddleware } from 'redux';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import {
+    createStore, applyMiddleware, AnyAction,
+} from 'redux';
 
 // Instruments
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { rootReducer } from './rootReducer';
 import {
     composeEnhancers,
@@ -14,3 +18,9 @@ export const store = createStore(
 );
 
 export type RootState = ReturnType<typeof store.getState>;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export type Action = { type: string; payload: unknown; error?: boolean };
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, AnyAction>;
+export type TDispatch = ThunkDispatch<RootState, void, AnyAction>;
+export type AppDispatch = TDispatch;

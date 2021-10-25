@@ -1,6 +1,7 @@
 // Core
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 // Components
 import { App } from './app';
@@ -11,9 +12,12 @@ import './theme/styles/index.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 render(
     <Provider store = { store }>
-        <App />
+        <Router>
+            <App />
+        </Router>
     </Provider>,
     document.getElementById('root'),
     () => {
