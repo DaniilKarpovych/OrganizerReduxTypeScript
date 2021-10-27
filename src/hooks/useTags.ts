@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useAppDispatch } from '../lib/redux/init/store';
 import { tagActions } from '../lib/redux/actions/tagAction';
 
-export const useProfile = () => {
+export const useTags = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {

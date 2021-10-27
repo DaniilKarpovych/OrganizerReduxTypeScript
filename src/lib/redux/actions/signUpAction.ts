@@ -1,6 +1,9 @@
+import { toast } from 'react-toastify';
 import { api } from '../../../api';
-import { AppDispatch } from '../init/store';
+import { toastOptions } from '../../../constants/toastOptions';
+import { AppDispatch, AppThunk } from '../init/store';
 import { authTypes } from '../types/authTypes';
+import { ILogin } from './loginAction';
 
 export type IRegistration = {
     name:string;
@@ -10,44 +13,68 @@ export type IRegistration = {
 };
 
 export const signUpActions = Object.freeze({
-
+    resetError: () => {
+        return {
+            type: authTypes.RESET_ERROR,
+        };
+    },
     setToken: (newToken:string) => {
         return {
             type:    authTypes.ADD_TOKEN,
             payload: newToken,
         };
     },
+    setSignUpCredential: (credential:IRegistration) => {
+        return {
+            type:    authTypes.ADD_CREDENTIAL,
+            payload: credential,
+        };
+    },
+    setLoginCredential: (credential:ILogin) => {
+        return {
+            type:    authTypes.ADD_LOGIN_CREDENTIAL,
+            payload: credential,
+        };
+    },
+    setErrorMessage: (errorMessage:string) => {
+        return {
+            type:    authTypes.ADD_CREDENTIAL,
+            payload: errorMessage,
+        };
+    },
+    setError: (error:boolean) => {
+        return {
+            type:    authTypes.ADD_CREDENTIAL,
+            payload: error,
+        };
+    },
 
     signUpAsync: (
-        credentials: IRegistration & { confirmPassword: string },
-    ) => async (dispatch: AppDispatch) => {
+        credentials: IRegistration,
+    ):AppThunk => async (dispatch: AppDispatch)  => {
+        if (!credentials) {
+            return null;
+        }
         const {
             name,
             email,
             password,
         } = credentials;
-        const response = await api.getSignUp({
-            name,
-            email,
-            password,
-        });
+        try {
+            const response = await api.getSignUp({
+                name,
+                email,
+                password,
+            });
 
-        if (response.statusCode === 201) {
             const { data: token } = await response;
-
             localStorage.setItem('token', token);
             dispatch(signUpActions.setToken(token));
-            // dispatch(uiActions.notification({
-            //     type:    ToastTypes.SUCCESS,
-            //     message: `Добро пожаловать, ${credentials.name}`,
-            // }));
-        } else {
-            // const error = await response.json();
-            // dispatch(authActions.setFetchingError(error.message));
-            // dispatch(uiActions.notification({
-            //     type:    ToastTypes.ERROR,
-            //     message: error.message,
-            // }));
+            toast.success('Добро пожаловать ', toastOptions);
+        } catch (error) {
+            const { message } = error as Error;
+            dispatch(signUpActions.setErrorMessage(message));
+            dispatch(signUpActions.setError(true));
         }
     },
 });

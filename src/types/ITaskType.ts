@@ -1,6 +1,7 @@
 
 
 export type ITaskType = {
+    id: string;
     completed:boolean;
     title: string;
     description: string;
@@ -11,5 +12,4 @@ export type ITaskType = {
         color: string;
         bg: string;
     }
-    key?: number;
 };

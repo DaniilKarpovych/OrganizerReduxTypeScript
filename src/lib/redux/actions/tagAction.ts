@@ -2,6 +2,7 @@ import { api } from '../../../api';
 import { ITagType } from '../../../types/ITagType';
 import { Action, AppThunk } from '../init/store';
 import { tagTypes } from '../types/tagTypes';
+import { signUpActions } from './signUpAction';
 
 export const tagActions = Object.freeze({
     startFetching: () => {
@@ -31,15 +32,11 @@ export const tagActions = Object.freeze({
 
     fetchTagAsync: (): AppThunk => async (dispatch) => {
         try {
-            dispatch(tagActions.startFetching());
-
             const tags = await api.getTags();
             dispatch(tagActions.fetchTag(tags));
         } catch (error) {
             const { message } = error as Error;
-        // dispatch(authActions.setError(message));
-        } finally {
-            dispatch(tagActions.stopFetching());
+            dispatch(signUpActions.setErrorMessage(message));
         }
     },
 });

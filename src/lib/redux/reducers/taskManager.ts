@@ -1,10 +1,13 @@
 // Types
 import { AnyAction } from 'redux';
-import { ITaskType } from '../../../types/ITaskType';
 import { stateManagerTypes } from '../types/stateManager';
 
-const initialState:{ items:ITaskType[] } = {
-    items: [],
+const initialState = {
+    item:        {},
+    itemsState:  [],
+    itemsDelete: false,
+    itemsEdit:   false,
+    itemsPost:   false,
 };
 
 
@@ -13,25 +16,31 @@ export const taskManagerReduser = (state = initialState, action: AnyAction) => {
         case stateManagerTypes.ADD_NEW_TASK: {
             return {
                 ...state,
-                items: [...state.items, action.payload],
+                item: action.payload,
             };
         }
         case stateManagerTypes.DELETE_ITEM: {
             return {
                 ...state,
-                items: state.items.filter((item, index) => {
-                    return index !== action.payload;
-                }),
+                itemsDelete: action.payload,
             };
         }
         case stateManagerTypes.EDIT_ITEMS: {
             return {
                 ...state,
-                items: state.items.map((item, index) => {
-                    if (index !== action.payload.selectedTask) return item;
-
-                    return action.payload;
-                }),
+                itemsEdit: action.payload,
+            };
+        }
+        case stateManagerTypes.LOAD_STATE: {
+            return {
+                ...state,
+                itemsState: action.payload,
+            };
+        }
+        case stateManagerTypes.POST_NEW_TASK: {
+            return {
+                ...state,
+                itemsPost: action.payload,
             };
         }
         default: {

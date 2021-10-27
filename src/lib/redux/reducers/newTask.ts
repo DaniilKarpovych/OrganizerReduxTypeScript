@@ -6,7 +6,7 @@ const initialState = {
     isNewTaskOpen: false,
 };
 
-export const newTaskReduser = (state = initialState, action: AnyAction) => {
+export const newTaskFormReduser = (state = initialState, action: AnyAction) => {
     switch (action.type) {
         case newTaskTypes.OPEN_NEW_TASK: {
             return {

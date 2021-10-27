@@ -1,18 +1,28 @@
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { schema } from './config';
 import { useAppDispatch } from '../../lib/redux/init/store';
 import { IRegistration, signUpActions } from '../../lib/redux/actions/signUpAction';
+import { getToken } from '../../lib/redux/selectors/auth';
 
 export const SignUpForm = () => {
+    const token = useSelector(getToken);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (token || localStorage.getItem('token')) {
+            navigate('/todo/task-manager');
+        }
+    }, []);
     const dispatch = useAppDispatch();
     const form = useForm<IRegistration>({
         mode:     'onTouched',
         resolver: yupResolver(schema),
     });
     const onSubmit = form.handleSubmit((credentials:IRegistration) => {
-        dispatch(signUpActions.signUpAsync(credentials));
+        dispatch(signUpActions.setSignUpCredential(credentials));
     });
 
     return (

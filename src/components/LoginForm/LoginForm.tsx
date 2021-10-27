@@ -1,20 +1,30 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { loginActions } from '../../lib/redux/actions/loginAction';
-import { IRegistration } from '../../lib/redux/actions/signUpAction';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { ILogin } from '../../lib/redux/actions/loginAction';
+import { IRegistration, signUpActions } from '../../lib/redux/actions/signUpAction';
 import { useAppDispatch } from '../../lib/redux/init/store';
+import { getToken } from '../../lib/redux/selectors/auth';
 import { schema } from './config';
 
 export const LoginForm: React.FC = () => {
+    const token = useSelector(getToken);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (token || localStorage.getItem('token')) {
+            navigate('/todo/task-manager');
+        }
+    }, []);
     const dispatch = useAppDispatch();
     const form = useForm<IRegistration>({
         mode:     'onTouched',
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = form.handleSubmit((credential) => {
-        dispatch(loginActions.loginAsync(credential));
+    const onSubmit = form.handleSubmit((credential:ILogin) => {
+        dispatch(signUpActions.setLoginCredential(credential));
         form.reset();
     });
 

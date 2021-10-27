@@ -1,6 +1,6 @@
 import { RootState } from '../init/store';
 
 
-export const getSelectedTask = (state: RootState):number => {
-    return state.selectedTask.selectedTask;
+export const getSelectedTaskID = (state: RootState):string => {
+    return state.selectedTask.selectedTaskID;
 };

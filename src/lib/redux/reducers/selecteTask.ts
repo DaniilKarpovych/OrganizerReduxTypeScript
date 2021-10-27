@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import { selectedTaskTypes } from '../types/selectedTask';
 
 const initialState = {
-    selectedTask: null,
+    selectedTaskID: '',
 };
 
 export const selectedTaskReduser = (state = initialState, action: AnyAction) => {
@@ -11,7 +11,7 @@ export const selectedTaskReduser = (state = initialState, action: AnyAction) => 
         case selectedTaskTypes.SELECT_TASK: {
             return {
                 ...state,
-                selectedTask: action.payload,
+                selectedTaskID: action.payload,
             };
         }
 

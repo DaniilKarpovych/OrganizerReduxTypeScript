@@ -3,72 +3,70 @@ import ReactDatePicker, { registerLocale }  from 'react-datepicker';
 import { useForm } from 'react-hook-form';
 import  ru  from 'date-fns/locale/ru';
 import { useSelector } from 'react-redux';
-import { settingActions } from '../lib/redux/actions/newTaskForm';
-import { taskStateActions } from '../lib/redux/actions/taskManager';
-import { useAppDispatch } from '../lib/redux/init/store';
-import { getTaskState } from '../lib/redux/selectors/stateManager';
-import { getSelectedTask } from '../lib/redux/selectors/selectedTask';
-import { selectedTaskActions } from '../lib/redux/actions/selectTaskAction';
-import { ITagType } from '../types/ITagType';
-import { Tag } from './Tag';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { settingActions } from '../../lib/redux/actions/newTaskForm';
+import { taskStateActions } from '../../lib/redux/actions/taskManager';
+import { useAppDispatch } from '../../lib/redux/init/store';
+import { getTaskState } from '../../lib/redux/selectors/stateManager';
+import { getSelectedTaskID } from '../../lib/redux/selectors/selectedTask';
+import { Tag } from '../Tag';
+import { schema } from './config';
 
-type formType = {
+export type formTaskType = {
     completed:boolean;
     title:string;
     deadline:string;
     description:string;
-    tag:ITagType;
+    tag:string;
 };
 
 export const TaskCard = () => {
     const dispatch = useAppDispatch();
+    registerLocale('ru', ru);
     const state = useSelector(getTaskState);
-    const selectedTask = useSelector(getSelectedTask);
-    const form = useForm<formType>({
+    const selectedTask = useSelector(getSelectedTaskID);
+    const form = useForm<formTaskType>({
         mode:          'onTouched',
-        // resolver: yupResolver(schema),
+        resolver:      yupResolver(schema),
         defaultValues: {
+            completed:   false,
             title:       '',
             deadline:    `${new Date()}`,
             description: '',
-            tag:         {
-                bg:    '#fffaf0',
-                color: '#ffab2b',
-                id:    '8b535acc-623b-4ee3-9279-e6175159ff47',
-                name:  'Sketch',
-            },
+            tag:         '8b535acc-623b-4ee3-9279-e6175159ff47',
+
         },
     });
     const selectedTag = form.watch('tag');
     const selectedDate = form.watch('deadline');
-    console.log(selectedTask);
     useEffect(() => {
-        if (selectedTask !== null) {
-            form.reset({ ...state[ selectedTask ] });
+        if (selectedTask) {
+            const {
+                completed, title, deadline, description, tag,
+            } = state[ state.findIndex((item) => item.id === selectedTask) ];
+
+            form.reset({
+                completed, title, deadline, description, tag: tag.id,
+            });
         } else {
             form.reset({
+                completed:   false,
                 title:       '',
                 deadline:    `${new Date()}`,
                 description: '',
-                tag:         {
-                    bg:    '#fffaf0',
-                    color: '#ffab2b',
-                    id:    '8b535acc-623b-4ee3-9279-e6175159ff47',
-                    name:  'Sketch',
-                },
+                tag:         '8b535acc-623b-4ee3-9279-e6175159ff47',
             });
         }
     }, [selectedTask]);
-    registerLocale('ru', ru);
+
     const onSubmit = form.handleSubmit((credentials) => {
-        // await login.mutateAsync(credentials);
         if (selectedTask) {
-            dispatch(taskStateActions.editItem({ ...credentials, selectedTask }));
+            dispatch(taskStateActions.editItem(true));
         } else {
-            dispatch(taskStateActions.setNewState({ ...credentials }));
+            dispatch(taskStateActions.postItem(true));
         }
+        dispatch(taskStateActions.setNewState({ ...credentials }));
         dispatch(settingActions.setSettingsOpen(false));
-        dispatch(selectedTaskActions.selectTask(null));
     });
 
     const handlerOnClick = (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -76,9 +74,8 @@ export const TaskCard = () => {
         dispatch(settingActions.setSettingsOpen(false));
     };
     const handlerDeleteClick = () => {
-        dispatch(taskStateActions.deleteItem(selectedTask));
         dispatch(settingActions.setSettingsOpen(false));
-        dispatch(selectedTaskActions.selectTask(null));
+        dispatch(taskStateActions.deleteItem(true));
         form.reset();
     };
 
@@ -87,10 +84,10 @@ export const TaskCard = () => {
         <div className = 'task-card'>
             <form onSubmit = { onSubmit }>
                 <div className = 'head'>
-                    { selectedTask !== null && <button
-                        type = 'button' onClick = { () => { form.setValue('completed', true); } }
+                    { selectedTask  && <button
+                        type = 'submit' onClick = { () => { form.setValue('completed', true); } }
                         className = 'button-complete-task'>завершить</button> }
-                    { selectedTask !== null && <div onClick = { handlerDeleteClick } className = 'button-remove-task'></div> }
+                    { selectedTask  && <div onClick = { handlerDeleteClick } className = 'button-remove-task'></div> }
                 </div>
                 <div className = 'content'>
                     <label className = 'label'>
@@ -127,7 +124,10 @@ export const TaskCard = () => {
                     <Tag selectedTag = { selectedTag } setValue = { form.setValue } />
                     <div className = 'errors'>
                         <p className = 'errorMessage'>
-                            Минимальная длина поля title — 3
+                            { form.formState.errors?.title?.message }
+                        </p>
+                        <p className = 'errorMessage'>
+                            { form.formState.errors?.description?.message }
                         </p>
                     </div>
                     <div className = 'form-controls'>

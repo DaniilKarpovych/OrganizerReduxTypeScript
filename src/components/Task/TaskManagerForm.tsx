@@ -1,27 +1,32 @@
 import React, { SyntheticEvent } from 'react';
 import { useSelector } from 'react-redux';
-import { settingActions } from '../lib/redux/actions/newTaskForm';
-import { useAppDispatch } from '../lib/redux/init/store';
-import { getNewTask } from '../lib/redux/selectors/newTask';
-import { getTaskState } from '../lib/redux/selectors/stateManager';
-import { TaskCard } from './TaskCard';
+import { settingActions } from '../../lib/redux/actions/newTaskForm';
+import { useAppDispatch } from '../../lib/redux/init/store';
+import { getNewTaskForm } from '../../lib/redux/selectors/newTaskForm';
+import { getTaskState } from '../../lib/redux/selectors/stateManager';
 import { Task } from './Task';
-import { selectedTaskActions } from '../lib/redux/actions/selectTaskAction';
+import { selectedTaskActions } from '../../lib/redux/actions/selectTaskAction';
+import { TaskCard } from './TaskCard';
+import { getToken } from '../../lib/redux/selectors/auth';
 
 export const TaskManagerForm:React.FC = () => {
-    const newTask = useSelector(getNewTask);
+    const token = useSelector(getToken);
+    const localToken = localStorage.getItem('token');
+    if (!token && !localToken) {
+        return null;
+    }
+    const newTaskForm = useSelector(getNewTaskForm);
     const state = useSelector(getTaskState);
     const dispatch = useAppDispatch();
     const handlerOnClick = (event: SyntheticEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(selectedTaskActions.selectTask(null));
+        dispatch(selectedTaskActions.selectTaskID(''));
         dispatch(settingActions.setSettingsOpen(true));
     };
-    const taskJSX = state.length > 0 && state.map((task, id:number) => {
+    const taskJSX = state.length > 0 && state.map((task) => {
         return <Task
-            id = { id }
             { ...task }
-            key = { id }   />;
+            key = { task.id }   />;
     });
 
     return (
@@ -38,7 +43,7 @@ export const TaskManagerForm:React.FC = () => {
                         { state.length > 0 && taskJSX }
                     </div>
                 </div>
-                { newTask && <TaskCard /> }
+                { newTaskForm && <TaskCard /> }
             </div>
         </>
     );

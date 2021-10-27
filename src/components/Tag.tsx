@@ -1,18 +1,15 @@
 import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { useProfile } from '../hooks/useTags';
 import { getTagState } from '../lib/redux/selectors/tagStore';
-import { ITagType } from '../types/ITagType';
 
 type props = {
-    selectedTag:ITagType;
+    selectedTag:string;
     setValue: UseFormReturn['setValue'];
 };
 
 
 export const Tag: FC<props> = ({ selectedTag, setValue }) => {
-    useProfile();
     const tags = useSelector(getTagState);
 
     const tagJSX
@@ -20,9 +17,9 @@ export const Tag: FC<props> = ({ selectedTag, setValue }) => {
         && tags.map((tag) => {
             return (
                 <span
-                    onClick = { () => setValue('tag', tag) }
+                    onClick = { () => setValue('tag', tag.id) }
                     key = { tag.id }
-                    className = { `tag ${selectedTag.id === tag.id ? 'selected' : ''} ` }
+                    className = { `tag ${selectedTag === tag.id ? 'selected' : ''} ` }
                     style = { {
                         color:           tag.color,
                         backgroundColor: tag.bg,
