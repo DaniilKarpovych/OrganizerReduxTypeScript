@@ -5,14 +5,14 @@ import { AppDispatch, AppThunk } from '../init/store';
 import { signUpActions } from './signUpAction';
 
 export type ILogin = {
-    email:string;
-    password:string;
+    email: string;
+    password: string;
 };
 
 export const loginActions = Object.freeze({
 
 
-    loginAsync: (credentials: ILogin):AppThunk => async (dispatch: AppDispatch) => {
+    loginAsync: (credentials: ILogin): AppThunk => async (dispatch: AppDispatch) => {
         if (!credentials) {
             return null;
         }
@@ -24,9 +24,6 @@ export const loginActions = Object.freeze({
                 password,
             });
             const { data: token } = await response;
-            localStorage.setItem('token', token);
-            dispatch(signUpActions.setToken(token));
-
             localStorage.setItem('token', token);
             dispatch(signUpActions.setToken(token));
             toast.success('Добро пожаловать ', toastOptions);

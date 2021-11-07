@@ -8,6 +8,11 @@ import { Task } from './Task';
 import { selectedTaskActions } from '../../lib/redux/actions/selectTaskAction';
 import { TaskCard } from './TaskCard';
 import { getToken } from '../../lib/redux/selectors/auth';
+import { useTags } from '../../hooks/useTags';
+import { useEditTask } from '../../hooks/useEditTask';
+import { useDeleteTask } from '../../hooks/useDeleteTask';
+import { useTaskStateLoad } from '../../hooks/useTaskState';
+import { useNewTask } from '../../hooks/useNewTask';
 
 export const TaskManagerForm:React.FC = () => {
     const token = useSelector(getToken);
@@ -15,6 +20,11 @@ export const TaskManagerForm:React.FC = () => {
     if (!token && !localToken) {
         return null;
     }
+    useTags();
+    useEditTask();
+    useDeleteTask();
+    useTaskStateLoad();
+    useNewTask();
     const newTaskForm = useSelector(getNewTaskForm);
     const state = useSelector(getTaskState);
     const dispatch = useAppDispatch();

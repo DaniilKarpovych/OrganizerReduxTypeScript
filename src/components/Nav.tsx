@@ -18,7 +18,7 @@ export const Nav: React.FC = () => {
             event.preventDefault();
         }
     };
-    const ooClickLogout = () => {
+    const onClickLogout = () => {
         dispatch(signUpActions.setToken(''));
         localStorage.removeItem('token');
         navigate('/todo/login');
@@ -28,23 +28,23 @@ export const Nav: React.FC = () => {
     return (
         <nav>
             { !auth &&  <NavLink
-                className = '' to = '/todo/login'
+                to = '/todo/login'
                 aria-current = 'page'>
                 Войти
             </NavLink> }
             <NavLink
                 onClick = { handleClick }
-                aria-disabled = { `${!auth}` } className = ''
+                aria-disabled = { `${!auth}` }
                 to = '/todo/task-manager'>
                 К задачам
             </NavLink>
             <NavLink
                 onClick = { handleClick }
-                aria-disabled = { `${!auth}` } className = ''
+                aria-disabled = { `${!auth}` }
                 to = '/todo/profile'>
                 Профиль
             </NavLink>
-            { auth && <button onClick = { ooClickLogout } className = 'button-logout'>Выйти</button> }
+            { auth && <button onClick = { onClickLogout } className = 'button-logout'>Выйти</button> }
         </nav>
     );
 };

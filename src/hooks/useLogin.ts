@@ -11,14 +11,14 @@ import { getLoginCred, getToken } from '../lib/redux/selectors/auth';
 import { loginActions } from '../lib/redux/actions/loginAction';
 
 export const useLogin = () => {
-    const token = useSelector(getToken);
+    const token = useSelector(getToken) || localStorage.getItem('token');
     const navigate = useNavigate();
     const credential = useSelector(getLoginCred);
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(loginActions.loginAsync(credential));
         if (token) {
             navigate('/todo/task-manager');
         }
-    }, [credential]);
+        dispatch(loginActions.loginAsync(credential));
+    }, [credential, token]);
 };

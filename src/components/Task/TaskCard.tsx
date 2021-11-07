@@ -11,6 +11,7 @@ import { getTaskState } from '../../lib/redux/selectors/stateManager';
 import { getSelectedTaskID } from '../../lib/redux/selectors/selectedTask';
 import { Tag } from '../Tag';
 import { schema } from './config';
+import { defaultValues } from '../../constants/defaultValues';
 
 export type formTaskType = {
     completed:boolean;
@@ -19,23 +20,16 @@ export type formTaskType = {
     description:string;
     tag:string;
 };
+registerLocale('ru', ru);
 
 export const TaskCard = () => {
     const dispatch = useAppDispatch();
-    registerLocale('ru', ru);
     const state = useSelector(getTaskState);
     const selectedTask = useSelector(getSelectedTaskID);
     const form = useForm<formTaskType>({
-        mode:          'onTouched',
-        resolver:      yupResolver(schema),
-        defaultValues: {
-            completed:   false,
-            title:       '',
-            deadline:    `${new Date()}`,
-            description: '',
-            tag:         '8b535acc-623b-4ee3-9279-e6175159ff47',
-
-        },
+        mode:     'onTouched',
+        resolver: yupResolver(schema),
+        defaultValues,
     });
     const selectedTag = form.watch('tag');
     const selectedDate = form.watch('deadline');
@@ -49,13 +43,7 @@ export const TaskCard = () => {
                 completed, title, deadline, description, tag: tag.id,
             });
         } else {
-            form.reset({
-                completed:   false,
-                title:       '',
-                deadline:    `${new Date()}`,
-                description: '',
-                tag:         '8b535acc-623b-4ee3-9279-e6175159ff47',
-            });
+            form.reset(defaultValues);
         }
     }, [selectedTask]);
 
@@ -73,7 +61,8 @@ export const TaskCard = () => {
         event.preventDefault();
         dispatch(settingActions.setSettingsOpen(false));
     };
-    const handlerDeleteClick = () => {
+    const handlerDeleteClick = (event: SyntheticEvent<HTMLDivElement>) => {
+        event.preventDefault();
         dispatch(settingActions.setSettingsOpen(false));
         dispatch(taskStateActions.deleteItem(true));
         form.reset();

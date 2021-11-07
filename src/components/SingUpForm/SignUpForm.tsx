@@ -7,8 +7,10 @@ import { schema } from './config';
 import { useAppDispatch } from '../../lib/redux/init/store';
 import { IRegistration, signUpActions } from '../../lib/redux/actions/signUpAction';
 import { getToken } from '../../lib/redux/selectors/auth';
+import { useSignUp } from '../../hooks/useSignUp';
 
 export const SignUpForm = () => {
+    useSignUp();
     const token = useSelector(getToken);
     const navigate = useNavigate();
     useEffect(() => {
